@@ -16,5 +16,8 @@ router.post('/login',
 router.post('/refresh',
     authLimiter,
     userController.refreshAccessToken);
-
+router.post('/logout',
+    authLimiter,
+    userController.logoutUser
+);
 module.exports = router;

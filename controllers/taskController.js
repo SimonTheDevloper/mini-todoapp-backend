@@ -121,7 +121,7 @@ exports.patchTask = async (req, res) => {
         if (!task) {
             return res.status(404).json({ error: "Task nicht gefunden" });
         }
-        if (task.userId.toString() !== req.userId) { //in der Datenbank kein einfacher String ist, sondern ein BSON-Objekt ====> DESHALB toSring
+        if (task.userId.toString() !== req.userId) {
             return res.status(403).json({ error: "Du darfst diesen Task nicht löschen" });
         }
         const updatedTodo = await Task.findByIdAndUpdate(id, updates, { new: true }); // new true damit die aktualisierte version zurückgegeben wird;
