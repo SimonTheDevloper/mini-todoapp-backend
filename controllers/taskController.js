@@ -131,3 +131,16 @@ exports.patchTask = async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 };
+exports.deleteAllTasks = async (req, res) => {
+    try {
+        const userId = req.userId;
+
+        const result = await Task.deleteMany({ userId: userId });
+        res.status(200).json({
+            msg: "Alle Tasks wurden erfolgreich gelöscht",
+            count: result.deletedCount
+        });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};

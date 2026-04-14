@@ -21,7 +21,7 @@ router.post('/logout',
     authLimiter,
     userController.logoutUser
 );
-router.post('/',
+router.delete('/deleteAccount',
     authLimiter,
     authMiddleware,
     userController.deleteAccount);
