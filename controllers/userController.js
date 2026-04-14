@@ -3,6 +3,7 @@ const RefreshToken = require("../models/refreshToken");
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
+const Task = require("../models/task");
 
 const generateTokens = async (userId, res) => {
     const accessToken = jwt.sign(
@@ -130,4 +131,29 @@ exports.logoutUser = async (req, res) => {
         res.status(500).json({ message: "Abmelden fehgelschlagen" })
     }
 
+};
+exports.deleteAccount = async (req, res) => {
+    const { password } = req.body; // User muss sein Passwort mitschicken
+
+    try {
+        const user = await USER.findById(req.user.id);
+        if (!user) return res.status(404).json({ error: "User nicht gefunden" });
+
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
+            return res.status(401).json({ error: "Löschen fehlgeschlagen: Passwort ist falsch." });
+        }
+
+        await USER.findByIdAndDelete(req.user.id);
+        await RefreshToken.deleteMany({ userId: req.user.id });
+        await Task.deleteMany({ userId: req.user.id });
+
+        res.clearCookie("accessToken", { path: "/" });
+        res.clearCookie("refreshToken", { path: "/" });
+
+        res.status(200).json({ message: "Account erfolgreich gelöscht." });
+
+    } catch (err) {
+        res.status(500).json({ error: "Serverfehler beim Löschen: " + err.message });
+    }
 };

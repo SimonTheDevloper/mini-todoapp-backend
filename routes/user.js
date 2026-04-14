@@ -3,6 +3,7 @@ const router = express.Router();
 const userController = require('../controllers/userController');
 const { registerValidation, handleValidationErrors } = require('../middleware/validation');
 const { authLimiter } = require('../middleware/rateLimiter');
+const authMiddleware = require('../middleware/auth');
 
 
 router.post('/register',
@@ -20,4 +21,8 @@ router.post('/logout',
     authLimiter,
     userController.logoutUser
 );
+router.post('/',
+    authLimiter,
+    authMiddleware,
+    userController.deleteAccount);
 module.exports = router;
