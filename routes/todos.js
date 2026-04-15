@@ -15,8 +15,9 @@ router.get('/:id', authMiddleware, taskController.getTasksById);
 
 router.post('/', authMiddleware, taskController.createTask);
 
-router.delete('/:id', authMiddleware, taskController.deleteTask);
 router.delete("/deleteAll", authMiddleware, taskController.deleteAllTasks);
+router.delete('/:id', authMiddleware, taskController.deleteTask); // wichtig das erst die spezifische route in dem Fall deleteAll und danach eine mit einem Platzhalter wie :id
+
 
 router.put('/:id', authMiddleware, taskController.updateTask);
 
