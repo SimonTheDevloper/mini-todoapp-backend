@@ -134,9 +134,15 @@ exports.logoutUser = async (req, res) => {
 };
 exports.deleteAccount = async (req, res) => {
     const { password } = req.body; // User muss sein Passwort mitschicken
+    const ownerId = req.userId;
 
     try {
-        const user = await USER.findById(req.user.id);
+        if (!password) {
+            return res.status(400).json({ error: "Bitte gib dein Passwort ein, um zu bestätigen." })
+        }
+
+        const user = await USER.findById(ownerId);
+
         if (!user) return res.status(404).json({ error: "User nicht gefunden" });
 
         const isMatch = await bcrypt.compare(password, user.password);
@@ -144,9 +150,9 @@ exports.deleteAccount = async (req, res) => {
             return res.status(401).json({ error: "Löschen fehlgeschlagen: Passwort ist falsch." });
         }
 
-        await USER.findByIdAndDelete(req.user.id);
-        await RefreshToken.deleteMany({ userId: req.user.id });
-        await Task.deleteMany({ userId: req.user.id });
+        await USER.findByIdAndDelete(ownerId);
+        await RefreshToken.deleteMany({ userId: ownerId });
+        await Task.deleteMany({ userId: ownerId });
 
         res.clearCookie("accessToken", { path: "/" });
         res.clearCookie("refreshToken", { path: "/" });
